@@ -142,6 +142,8 @@ function renderSimulationResults(data) {
   }
 
   // 2. Render Gantt view
+  currentSimTasks = data.tasks || [];
+  currentMigrations = data.migrations || [];
   const migratedTaskIds = new Set((data.migrations || []).map(mig => mig.task_id));
   renderGantt(data.timelines, m.makespan, migratedTaskIds);
 
@@ -199,6 +201,68 @@ function renderGantt(timelines, makespan, migratedTaskIds) {
   });
 }
 
+let currentSimTasks = [];
+let currentMigrations = [];
+
+function inspectTask(taskId) {
+  const inspector = document.getElementById('task-inspector');
+  if (!inspector || taskId === null || taskId === undefined) return;
+
+  const task = currentSimTasks.find(t => t.task_id === taskId);
+  if (!task) return;
+
+  inspector.style.display = 'block';
+  const title = document.getElementById('inspector-task-title');
+  const badge = document.getElementById('inspector-badge');
+  const grid = document.getElementById('inspector-grid');
+
+  title.textContent = `Task #${task.task_id} Execution Trace`;
+
+  const migrationRecord = currentMigrations.find(m => m.task_id === task.task_id);
+  if (migrationRecord) {
+    badge.textContent = `MIGRATED (Core ${migrationRecord.from_core} → Core ${migrationRecord.to_core})`;
+    badge.className = 'badge badge-phase';
+  } else {
+    badge.textContent = task.tag === 'heavy' ? 'HEAVY BURST' : 'NORMAL';
+    badge.className = task.tag === 'heavy' ? 'badge delta-negative' : 'badge badge-sub';
+  }
+
+  grid.innerHTML = `
+    <div class="inspector-item">
+      <span class="inspector-label">Arrival Tick</span>
+      <span class="inspector-val">Tick ${task.arrival_time}</span>
+    </div>
+    <div class="inspector-item">
+      <span class="inspector-label">Burst Workload</span>
+      <span class="inspector-val">${task.burst_time} cycles</span>
+    </div>
+    <div class="inspector-item">
+      <span class="inspector-label">Executing Core</span>
+      <span class="inspector-val">Core ${task.assigned_core_id}</span>
+    </div>
+    <div class="inspector-item">
+      <span class="inspector-label">Start Tick</span>
+      <span class="inspector-val">Tick ${task.start_time ?? '--'}</span>
+    </div>
+    <div class="inspector-item">
+      <span class="inspector-label">Wait / Response Time</span>
+      <span class="inspector-val">${task.response_time ?? '--'} ticks</span>
+    </div>
+    <div class="inspector-item">
+      <span class="inspector-label">Completion Tick</span>
+      <span class="inspector-val">Tick ${task.completion_time ?? '--'}</span>
+    </div>
+    <div class="inspector-item">
+      <span class="inspector-label">Turnaround Time</span>
+      <span class="inspector-val">${task.turnaround_time ?? '--'} ticks</span>
+    </div>
+    <div class="inspector-item">
+      <span class="inspector-label">Dynamic Migrations</span>
+      <span class="inspector-val">${task.migration_count || (migrationRecord ? 1 : 0)} times</span>
+    </div>
+  `;
+}
+
 function appendGanttBlock(track, block, totalMakespan, migratedTaskIds) {
   const div = document.createElement('div');
   const widthPct = Math.max(0.4, (block.duration / totalMakespan) * 100);
@@ -217,13 +281,15 @@ function appendGanttBlock(track, block, totalMakespan, migratedTaskIds) {
     const isMigrated = migratedTaskIds.has(block.taskId);
     if (isMigrated) {
       div.className = 'gantt-block block-migrated';
-      div.title = `[Migrated] Task #${block.taskId} (${block.duration} ticks)`;
+      div.title = `[Click to Inspect] Migrated Task #${block.taskId} (${block.duration} ticks)`;
       if (widthPct > 3) div.textContent = `T${block.taskId}*`;
     } else {
       div.className = block.duration >= 20 ? 'gantt-block block-heavy' : 'gantt-block block-light';
-      div.title = `Task #${block.taskId} (${block.duration} ticks)`;
+      div.title = `[Click to Inspect] Task #${block.taskId} (${block.duration} ticks)`;
       if (widthPct > 3) div.textContent = `T${block.taskId}`;
     }
+
+    div.addEventListener('click', () => inspectTask(block.taskId));
   }
 
   track.appendChild(div);
