@@ -1,0 +1,482 @@
+[
+  {
+    "task_id": 1,
+    "arrival_time": 0,
+    "burst_time": 43,
+    "tag": "heavy"
+  },
+  {
+    "task_id": 2,
+    "arrival_time": 1,
+    "burst_time": 3,
+    "tag": "light"
+  },
+  {
+    "task_id": 3,
+    "arrival_time": 5,
+    "burst_time": 48,
+    "tag": "heavy"
+  },
+  {
+    "task_id": 4,
+    "arrival_time": 5,
+    "burst_time": 41,
+    "tag": "heavy"
+  },
+  {
+    "task_id": 5,
+    "arrival_time": 6,
+    "burst_time": 3,
+    "tag": "light"
+  },
+  {
+    "task_id": 6,
+    "arrival_time": 10,
+    "burst_time": 55,
+    "tag": "heavy"
+  },
+  {
+    "task_id": 7,
+    "arrival_time": 14,
+    "burst_time": 6,
+    "tag": "light"
+  },
+  {
+    "task_id": 8,
+    "arrival_time": 18,
+    "burst_time": 3,
+    "tag": "light"
+  },
+  {
+    "task_id": 9,
+    "arrival_time": 19,
+    "burst_time": 5,
+    "tag": "light"
+  },
+  {
+    "task_id": 10,
+    "arrival_time": 20,
+    "burst_time": 59,
+    "tag": "heavy"
+  },
+  {
+    "task_id": 11,
+    "arrival_time": 21,
+    "burst_time": 47,
+    "tag": "heavy"
+  },
+  {
+    "task_id": 12,
+    "arrival_time": 21,
+    "burst_time": 5,
+    "tag": "light"
+  },
+  {
+    "task_id": 13,
+    "arrival_time": 25,
+    "burst_time": 3,
+    "tag": "light"
+  },
+  {
+    "task_id": 14,
+    "arrival_time": 27,
+    "burst_time": 6,
+    "tag": "light"
+  },
+  {
+    "task_id": 15,
+    "arrival_time": 27,
+    "burst_time": 7,
+    "tag": "light"
+  },
+  {
+    "task_id": 16,
+    "arrival_time": 28,
+    "burst_time": 3,
+    "tag": "light"
+  },
+  {
+    "task_id": 17,
+    "arrival_time": 28,
+    "burst_time": 5,
+    "tag": "light"
+  },
+  {
+    "task_id": 18,
+    "arrival_time": 28,
+    "burst_time": 3,
+    "tag": "light"
+  },
+  {
+    "task_id": 19,
+    "arrival_time": 30,
+    "burst_time": 5,
+    "tag": "light"
+  },
+  {
+    "task_id": 20,
+    "arrival_time": 31,
+    "burst_time": 4,
+    "tag": "light"
+  },
+  {
+    "task_id": 21,
+    "arrival_time": 32,
+    "burst_time": 3,
+    "tag": "light"
+  },
+  {
+    "task_id": 22,
+    "arrival_time": 36,
+    "burst_time": 7,
+    "tag": "light"
+  },
+  {
+    "task_id": 23,
+    "arrival_time": 37,
+    "burst_time": 47,
+    "tag": "heavy"
+  },
+  {
+    "task_id": 24,
+    "arrival_time": 38,
+    "burst_time": 7,
+    "tag": "light"
+  },
+  {
+    "task_id": 25,
+    "arrival_time": 39,
+    "burst_time": 3,
+    "tag": "light"
+  },
+  {
+    "task_id": 26,
+    "arrival_time": 40,
+    "burst_time": 5,
+    "tag": "light"
+  },
+  {
+    "task_id": 27,
+    "arrival_time": 42,
+    "burst_time": 4,
+    "tag": "light"
+  },
+  {
+    "task_id": 28,
+    "arrival_time": 46,
+    "burst_time": 5,
+    "tag": "light"
+  },
+  {
+    "task_id": 29,
+    "arrival_time": 47,
+    "burst_time": 6,
+    "tag": "light"
+  },
+  {
+    "task_id": 30,
+    "arrival_time": 49,
+    "burst_time": 39,
+    "tag": "heavy"
+  },
+  {
+    "task_id": 31,
+    "arrival_time": 50,
+    "burst_time": 7,
+    "tag": "light"
+  },
+  {
+    "task_id": 32,
+    "arrival_time": 51,
+    "burst_time": 6,
+    "tag": "light"
+  },
+  {
+    "task_id": 33,
+    "arrival_time": 55,
+    "burst_time": 4,
+    "tag": "light"
+  },
+  {
+    "task_id": 34,
+    "arrival_time": 56,
+    "burst_time": 3,
+    "tag": "light"
+  },
+  {
+    "task_id": 35,
+    "arrival_time": 56,
+    "burst_time": 4,
+    "tag": "light"
+  },
+  {
+    "task_id": 36,
+    "arrival_time": 57,
+    "burst_time": 6,
+    "tag": "light"
+  },
+  {
+    "task_id": 37,
+    "arrival_time": 61,
+    "burst_time": 47,
+    "tag": "heavy"
+  },
+  {
+    "task_id": 38,
+    "arrival_time": 65,
+    "burst_time": 7,
+    "tag": "light"
+  },
+  {
+    "task_id": 39,
+    "arrival_time": 66,
+    "burst_time": 3,
+    "tag": "light"
+  },
+  {
+    "task_id": 40,
+    "arrival_time": 66,
+    "burst_time": 7,
+    "tag": "light"
+  },
+  {
+    "task_id": 41,
+    "arrival_time": 67,
+    "burst_time": 5,
+    "tag": "light"
+  },
+  {
+    "task_id": 42,
+    "arrival_time": 67,
+    "burst_time": 4,
+    "tag": "light"
+  },
+  {
+    "task_id": 43,
+    "arrival_time": 69,
+    "burst_time": 58,
+    "tag": "heavy"
+  },
+  {
+    "task_id": 44,
+    "arrival_time": 70,
+    "burst_time": 4,
+    "tag": "light"
+  },
+  {
+    "task_id": 45,
+    "arrival_time": 74,
+    "burst_time": 5,
+    "tag": "light"
+  },
+  {
+    "task_id": 46,
+    "arrival_time": 78,
+    "burst_time": 4,
+    "tag": "light"
+  },
+  {
+    "task_id": 47,
+    "arrival_time": 79,
+    "burst_time": 7,
+    "tag": "light"
+  },
+  {
+    "task_id": 48,
+    "arrival_time": 83,
+    "burst_time": 7,
+    "tag": "light"
+  },
+  {
+    "task_id": 49,
+    "arrival_time": 84,
+    "burst_time": 3,
+    "tag": "light"
+  },
+  {
+    "task_id": 50,
+    "arrival_time": 85,
+    "burst_time": 5,
+    "tag": "light"
+  },
+  {
+    "task_id": 51,
+    "arrival_time": 86,
+    "burst_time": 53,
+    "tag": "heavy"
+  },
+  {
+    "task_id": 52,
+    "arrival_time": 86,
+    "burst_time": 50,
+    "tag": "heavy"
+  },
+  {
+    "task_id": 53,
+    "arrival_time": 86,
+    "burst_time": 7,
+    "tag": "light"
+  },
+  {
+    "task_id": 54,
+    "arrival_time": 87,
+    "burst_time": 50,
+    "tag": "heavy"
+  },
+  {
+    "task_id": 55,
+    "arrival_time": 91,
+    "burst_time": 51,
+    "tag": "heavy"
+  },
+  {
+    "task_id": 56,
+    "arrival_time": 95,
+    "burst_time": 4,
+    "tag": "light"
+  },
+  {
+    "task_id": 57,
+    "arrival_time": 99,
+    "burst_time": 4,
+    "tag": "light"
+  },
+  {
+    "task_id": 58,
+    "arrival_time": 100,
+    "burst_time": 5,
+    "tag": "light"
+  },
+  {
+    "task_id": 59,
+    "arrival_time": 102,
+    "burst_time": 6,
+    "tag": "light"
+  },
+  {
+    "task_id": 60,
+    "arrival_time": 102,
+    "burst_time": 3,
+    "tag": "light"
+  },
+  {
+    "task_id": 61,
+    "arrival_time": 103,
+    "burst_time": 52,
+    "tag": "heavy"
+  },
+  {
+    "task_id": 62,
+    "arrival_time": 104,
+    "burst_time": 3,
+    "tag": "light"
+  },
+  {
+    "task_id": 63,
+    "arrival_time": 104,
+    "burst_time": 3,
+    "tag": "light"
+  },
+  {
+    "task_id": 64,
+    "arrival_time": 105,
+    "burst_time": 36,
+    "tag": "heavy"
+  },
+  {
+    "task_id": 65,
+    "arrival_time": 106,
+    "burst_time": 42,
+    "tag": "heavy"
+  },
+  {
+    "task_id": 66,
+    "arrival_time": 107,
+    "burst_time": 4,
+    "tag": "light"
+  },
+  {
+    "task_id": 67,
+    "arrival_time": 111,
+    "burst_time": 53,
+    "tag": "heavy"
+  },
+  {
+    "task_id": 68,
+    "arrival_time": 115,
+    "burst_time": 6,
+    "tag": "light"
+  },
+  {
+    "task_id": 69,
+    "arrival_time": 117,
+    "burst_time": 38,
+    "tag": "heavy"
+  },
+  {
+    "task_id": 70,
+    "arrival_time": 119,
+    "burst_time": 6,
+    "tag": "light"
+  },
+  {
+    "task_id": 71,
+    "arrival_time": 121,
+    "burst_time": 3,
+    "tag": "light"
+  },
+  {
+    "task_id": 72,
+    "arrival_time": 121,
+    "burst_time": 58,
+    "tag": "heavy"
+  },
+  {
+    "task_id": 73,
+    "arrival_time": 122,
+    "burst_time": 3,
+    "tag": "light"
+  },
+  {
+    "task_id": 74,
+    "arrival_time": 123,
+    "burst_time": 52,
+    "tag": "heavy"
+  },
+  {
+    "task_id": 75,
+    "arrival_time": 125,
+    "burst_time": 40,
+    "tag": "heavy"
+  },
+  {
+    "task_id": 76,
+    "arrival_time": 126,
+    "burst_time": 3,
+    "tag": "light"
+  },
+  {
+    "task_id": 77,
+    "arrival_time": 128,
+    "burst_time": 7,
+    "tag": "light"
+  },
+  {
+    "task_id": 78,
+    "arrival_time": 128,
+    "burst_time": 52,
+    "tag": "heavy"
+  },
+  {
+    "task_id": 79,
+    "arrival_time": 128,
+    "burst_time": 4,
+    "tag": "light"
+  },
+  {
+    "task_id": 80,
+    "arrival_time": 129,
+    "burst_time": 6,
+    "tag": "light"
+  }
+]

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multi-Core CPU Scheduling Simulator | Phase 1: Static Distribution</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="logo-icon">⚡</div>
+        <div>
+          <h1>Multi-Core CPU Scheduling Simulator</h1>
+          <div class="header-subtitle">
+            <span class="badge badge-phase">Phase 1: Baseline Static Distribution</span>
+            <span class="badge badge-sub">Project 24: Load-Balanced Multi-Core Scheduling</span>
+          </div>
+        </div>
+      </div>
+      <div class="header-right">
+        <a href="#comparison" class="nav-link">Benchmark Comparison</a>
+        <button id="btn-quick-skew" class="btn btn-secondary">Test Skewed Bottleneck</button>
+        <button id="btn-quick-balanced" class="btn btn-secondary">Test Balanced Workload</button>
+      </div>
+    </header>
+
+    <!-- Controls Panel -->
+    <section class="controls-card glass-panel">
+      <div class="controls-grid">
+        <div class="control-group">
+          <label for="workload-type">Workload Profile</label>
+          <select id="workload-type" class="form-select">
+            <option value="skewed_hotspot" selected>Skewed Hotspot (Severe Bottleneck)</option>
+            <option value="skewed_bimodal">Skewed Bimodal (Elephant & Mouse Tasks)</option>
+            <option value="balanced">Balanced (Homogeneous Bursts)</option>
+          </select>
+          <small class="helper-text" id="workload-desc">Every 4th task has 6x burst, overloading Core 0 in Static Round-Robin.</small>
+        </div>
+
+        <div class="control-group">
+          <label for="num-cores">CPU Cores</label>
+          <select id="num-cores" class="form-select">
+            <option value="2">2 Cores</option>
+            <option value="4" selected>4 Cores</option>
+            <option value="8">8 Cores</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label for="policy">Static Distribution Policy</label>
+          <select id="policy" class="form-select">
+            <option value="round_robin" selected>Round-Robin Static</option>
+            <option value="arrival_greedy">Arrival Greedy (Min-Pending at Arrival)</option>
+            <option value="random">Random Static</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label for="num-tasks">Task Count: <span id="task-count-val">60</span></label>
+          <input type="range" id="num-tasks" min="20" max="120" step="10" value="60" class="form-range">
+        </div>
+
+        <div class="control-actions">
+          <button id="btn-simulate" class="btn btn-primary">
+            <span class="btn-icon">▶</span> Run Simulation
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Key Metrics Cards -->
+    <section class="metrics-grid">
+      <div class="metric-card glass-panel" id="card-imbalance">
+        <div class="metric-label">Load Imbalance (StdDev)</div>
+        <div class="metric-value" id="val-imbalance">--</div>
+        <div class="metric-sub" id="sub-jains">Jain's Fairness: --</div>
+      </div>
+
+      <div class="metric-card glass-panel" id="card-speedup">
+        <div class="metric-label">Speedup & Efficiency</div>
+        <div class="metric-value" id="val-speedup">--</div>
+        <div class="metric-sub" id="sub-efficiency">Efficiency: --</div>
+      </div>
+
+      <div class="metric-card glass-panel" id="card-makespan">
+        <div class="metric-label">Makespan (Total Ticks)</div>
+        <div class="metric-value" id="val-makespan">--</div>
+        <div class="metric-sub" id="sub-1core">Single Core: -- ticks</div>
+      </div>
+
+      <div class="metric-card glass-panel" id="card-response">
+        <div class="metric-label">Avg / P95 Response Time</div>
+        <div class="metric-value" id="val-response">--</div>
+        <div class="metric-sub" id="sub-wait">Avg Wait Time: -- ticks</div>
+      </div>
+
+      <div class="metric-card glass-panel" id="card-utilization">
+        <div class="metric-label">Average CPU Utilization</div>
+        <div class="metric-value" id="val-utilization">--</div>
+        <div class="metric-sub" id="sub-throughput">Throughput: -- tasks/100t</div>
+      </div>
+    </section>
+
+    <!-- Core Execution Timeline (Gantt Chart) -->
+    <section class="visualizer-section glass-panel">
+      <div class="section-header">
+        <div>
+          <h2>Core Execution Timeline (Gantt View)</h2>
+          <p class="section-desc">Live discrete tick progression across all CPU cores. Observe idle periods and bottleneck cores.</p>
+        </div>
+        <div class="timeline-legend">
+          <span class="legend-item"><span class="legend-box tag-heavy"></span> Heavy Task (Elephant)</span>
+          <span class="legend-item"><span class="legend-box tag-light"></span> Light Task</span>
+          <span class="legend-item"><span class="legend-box tag-idle"></span> Core Idle</span>
+        </div>
+      </div>
+      <div id="gantt-container" class="gantt-container">
+        <!-- Core tracks generated dynamically -->
+      </div>
+    </section>
+
+    <!-- Charts Row -->
+    <section class="charts-grid">
+      <div class="chart-card glass-panel">
+        <h3>Per-Core Load & Busy vs Idle Distribution</h3>
+        <p class="chart-sub">Highlights severe load imbalance where bottleneck core does all the work while peers sit idle.</p>
+        <div class="chart-wrapper">
+          <canvas id="chart-core-load"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card glass-panel">
+        <h3>Queue Length Over Time (Per Core)</h3>
+        <p class="chart-sub">Visualizes queue backup on overloaded cores under static assignment without dynamic migration.</p>
+        <div class="chart-wrapper">
+          <canvas id="chart-queue-dynamics"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- Benchmark Comparison Section -->
+    <section id="comparison" class="comparison-section glass-panel">
+      <div class="section-header">
+        <div>
+          <h2>Phase 1 Benchmark Evaluation: Balanced vs Skewed Workloads</h2>
+          <p class="section-desc">Demonstrating why Static Task Distribution fails under skewed workloads and motivates Phase 2.</p>
+        </div>
+        <button id="btn-refresh-benchmarks" class="btn btn-secondary">Refresh Benchmarks</button>
+      </div>
+
+      <div class="table-container">
+        <table class="data-table" id="table-benchmarks">
+          <thead>
+            <tr>
+              <th>Workload</th>
+              <th>Policy</th>
+              <th>Cores</th>
+              <th>Makespan</th>
+              <th>Speedup</th>
+              <th>Efficiency</th>
+              <th>Load Imbalance (StdDev)</th>
+              <th>Jain's Index</th>
+              <th>Avg Response</th>
+              <th>P95 Response</th>
+              <th>Avg CPU Util</th>
+            </tr>
+          </thead>
+          <tbody id="benchmarks-tbody">
+            <tr><td colspan="11" class="text-center">Loading benchmark data...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="insight-box">
+        <div class="insight-title">💡 Key Observation for Phase 2:</div>
+        <p>
+          Under <strong>Balanced Workloads</strong>, static distribution operates near optimal speedup (up to 3.88x on 4 cores) with Jain's Index = 1.000.
+          However, under <strong>Skewed Workloads</strong>, static Round-Robin drops efficiency to <strong>~37%</strong> as Core 0 stays 100% busy while Cores 1–3 sit idle for 80%+ of execution.
+          In <strong>Phase 2</strong>, we will implement predictive load balancing and task migration to proactively offload tasks from overloaded cores to idle cores!
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
