@@ -1,17 +1,19 @@
-// Multi-Core CPU Scheduling Simulator - Phase 1 Dashboard
+// Multi-Core CPU Scheduling Simulator - Phase 2 Dashboard
 let loadChart = null;
 let queueChart = null;
 
 const elements = {
+  schedulerMode: document.getElementById('scheduler-mode'),
   workloadType: document.getElementById('workload-type'),
   numCores: document.getElementById('num-cores'),
   policy: document.getElementById('policy'),
+  migrationPenalty: document.getElementById('migration-penalty'),
   numTasks: document.getElementById('num-tasks'),
   taskCountVal: document.getElementById('task-count-val'),
   workloadDesc: document.getElementById('workload-desc'),
   btnSimulate: document.getElementById('btn-simulate'),
-  btnQuickSkew: document.getElementById('btn-quick-skew'),
-  btnQuickBalanced: document.getElementById('btn-quick-balanced'),
+  btnQuickPhase1: document.getElementById('btn-quick-phase1'),
+  btnQuickPhase2: document.getElementById('btn-quick-phase2'),
   btnRefreshBenchmarks: document.getElementById('btn-refresh-benchmarks'),
   
   // Metric values
@@ -24,10 +26,10 @@ const elements = {
   valResponse: document.getElementById('val-response'),
   subWait: document.getElementById('sub-wait'),
   valUtilization: document.getElementById('val-utilization'),
-  subThroughput: document.getElementById('sub-throughput'),
+  subMigrations: document.getElementById('sub-migrations'),
 
   ganttContainer: document.getElementById('gantt-container'),
-  benchmarksTbody: document.getElementById('benchmarks-tbody')
+  comparisonTbody: document.getElementById('comparison-tbody')
 };
 
 // Workload descriptions
@@ -49,7 +51,8 @@ function init() {
 
   elements.btnSimulate.addEventListener('click', () => runSimulation());
 
-  elements.btnQuickSkew.addEventListener('click', () => {
+  elements.btnQuickPhase1.addEventListener('click', () => {
+    elements.schedulerMode.value = 'static';
     elements.workloadType.value = 'skewed_hotspot';
     elements.workloadDesc.textContent = descriptions.skewed_hotspot;
     elements.policy.value = 'round_robin';
@@ -57,18 +60,20 @@ function init() {
     runSimulation();
   });
 
-  elements.btnQuickBalanced.addEventListener('click', () => {
-    elements.workloadType.value = 'balanced';
-    elements.workloadDesc.textContent = descriptions.balanced;
+  elements.btnQuickPhase2.addEventListener('click', () => {
+    elements.schedulerMode.value = 'dynamic';
+    elements.workloadType.value = 'skewed_hotspot';
+    elements.workloadDesc.textContent = descriptions.skewed_hotspot;
     elements.policy.value = 'round_robin';
     elements.numCores.value = '4';
+    elements.migrationPenalty.value = '1';
     runSimulation();
   });
 
-  elements.btnRefreshBenchmarks.addEventListener('click', () => loadBenchmarks());
+  elements.btnRefreshBenchmarks.addEventListener('click', () => loadComparisonTable());
 
   // Initial loads
-  loadBenchmarks();
+  loadComparisonTable();
   runSimulation();
 }
 
@@ -79,10 +84,14 @@ async function runSimulation() {
 
   try {
     const payload = {
+      scheduler_mode: elements.schedulerMode.value,
       workload_type: elements.workloadType.value,
       num_cores: parseInt(elements.numCores.value),
       num_tasks: parseInt(elements.numTasks.value),
       policy: elements.policy.value,
+      migration_penalty: parseInt(elements.migrationPenalty.value),
+      imbalance_threshold: 15.0,
+      prediction_horizon: 10,
       seed: 42
     };
 
@@ -123,10 +132,18 @@ function renderSimulationResults(data) {
   elements.subWait.textContent = `Avg Wait Time: ${m.waiting_time.mean.toFixed(1)} ticks`;
 
   elements.valUtilization.textContent = `${m.cpu_utilization.average_pct.toFixed(1)}%`;
-  elements.subThroughput.textContent = `Throughput: ${m.throughput_per_100_ticks} tasks/100t`;
+  
+  if (data.scheduler_mode === 'dynamic') {
+    const totalMig = m.migrations ? m.migrations.total_count : (data.migrations ? data.migrations.length : 0);
+    const overhead = m.migrations ? m.migrations.total_overhead_ticks : 0;
+    elements.subMigrations.textContent = `Dynamic Migrations: ${totalMig} (Overhead: ${overhead}t)`;
+  } else {
+    elements.subMigrations.textContent = `Static Mode: 0 Migrations`;
+  }
 
   // 2. Render Gantt view
-  renderGantt(data.timelines, m.makespan);
+  const migratedTaskIds = new Set((data.migrations || []).map(mig => mig.task_id));
+  renderGantt(data.timelines, m.makespan, migratedTaskIds);
 
   // 3. Render Charts
   renderCoreLoadChart(imb.core_busy_ticks, imb.core_idle_ticks, data.num_cores);
@@ -134,7 +151,7 @@ function renderSimulationResults(data) {
 }
 
 // Gantt timeline renderer
-function renderGantt(timelines, makespan) {
+function renderGantt(timelines, makespan, migratedTaskIds) {
   elements.ganttContainer.innerHTML = '';
   const coreKeys = Object.keys(timelines).sort();
 
@@ -166,7 +183,7 @@ function renderGantt(timelines, makespan) {
         if (t.task_id === currentBlock.taskId && t.state === currentBlock.state) {
           currentBlock.duration++;
         } else {
-          appendGanttBlock(track, currentBlock, makespan);
+          appendGanttBlock(track, currentBlock, makespan, migratedTaskIds);
           currentBlock = {
             taskId: t.task_id,
             state: t.state,
@@ -174,7 +191,7 @@ function renderGantt(timelines, makespan) {
           };
         }
       }
-      appendGanttBlock(track, currentBlock, makespan);
+      appendGanttBlock(track, currentBlock, makespan, migratedTaskIds);
     }
 
     row.appendChild(track);
@@ -182,20 +199,31 @@ function renderGantt(timelines, makespan) {
   });
 }
 
-function appendGanttBlock(track, block, totalMakespan) {
+function appendGanttBlock(track, block, totalMakespan, migratedTaskIds) {
   const div = document.createElement('div');
-  const widthPct = Math.max(0.5, (block.duration / totalMakespan) * 100);
+  const widthPct = Math.max(0.4, (block.duration / totalMakespan) * 100);
   div.style.width = `${widthPct}%`;
 
   if (block.state === 'IDLE') {
     div.className = 'gantt-block block-idle';
     div.title = `Core Idle (${block.duration} ticks)`;
     if (widthPct > 5) div.textContent = 'idle';
+  } else if (block.state === 'MIGRATING') {
+    div.className = 'gantt-block block-migrating';
+    div.title = `Migration Context Penalty (${block.duration} ticks)`;
+    if (widthPct > 4) div.textContent = 'mig';
   } else {
-    // Check if heavy (>20 ticks) or light
-    div.className = block.duration >= 20 ? 'gantt-block block-heavy' : 'gantt-block block-light';
-    div.title = `Task #${block.taskId} (${block.duration} ticks)`;
-    if (widthPct > 3) div.textContent = `T${block.taskId}`;
+    // Task execution block
+    const isMigrated = migratedTaskIds.has(block.taskId);
+    if (isMigrated) {
+      div.className = 'gantt-block block-migrated';
+      div.title = `[Migrated] Task #${block.taskId} (${block.duration} ticks)`;
+      if (widthPct > 3) div.textContent = `T${block.taskId}*`;
+    } else {
+      div.className = block.duration >= 20 ? 'gantt-block block-heavy' : 'gantt-block block-light';
+      div.title = `Task #${block.taskId} (${block.duration} ticks)`;
+      if (widthPct > 3) div.textContent = `T${block.taskId}`;
+    }
   }
 
   track.appendChild(div);
@@ -257,7 +285,7 @@ function renderQueueChart(timelines, numCores) {
   const colors = ['#06b6d4', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#a855f7', '#ec4899', '#8b5cf6'];
   const coreKeys = Object.keys(timelines).sort();
 
-  // Downsample to max 100 points for smooth charting
+  // Downsample for smooth rendering
   const sampleStep = Math.max(1, Math.floor((timelines[coreKeys[0]]?.length || 100) / 80));
   const labels = [];
   const datasets = coreKeys.map((key, idx) => {
@@ -306,41 +334,93 @@ function renderQueueChart(timelines, numCores) {
   });
 }
 
-// Load static benchmark results table
-async function loadBenchmarks() {
+// Load Phase 1 vs Phase 2 Comparison Table
+async function loadComparisonTable() {
   try {
-    const res = await fetch('/api/benchmarks');
+    const res = await fetch('/api/phase2_comparison');
     if (!res.ok) return;
-    const benchmarks = await res.json();
+    const data = await res.json();
     
-    elements.benchmarksTbody.innerHTML = '';
-    
-    for (const [wKey, wData] of Object.entries(benchmarks)) {
-      wData.runs.forEach(run => {
-        const m = run.metrics;
-        const tr = document.createElement('tr');
-        
-        const isSkewedHotspot = run.workload.includes('hotspot');
-        const isBadImbalance = m.load_imbalance.jains_fairness_index < 0.7;
+    elements.comparisonTbody.innerHTML = '';
+    const h = data.skewed_hotspot;
+    if (!h) return;
 
-        tr.innerHTML = `
-          <td><strong>${wData.workload_name}</strong></td>
-          <td>${run.policy.replace('_', ' ')}</td>
-          <td>${run.num_cores}</td>
-          <td>${m.makespan}</td>
-          <td><span style="color: ${m.speedup > 3 ? '#10b981' : '#f59e0b'}">${m.speedup ? m.speedup.toFixed(2) + 'x' : '1.00x'}</span></td>
-          <td>${m.efficiency_pct ? m.efficiency_pct.toFixed(1) + '%' : '100%'}</td>
-          <td style="color: ${isBadImbalance ? '#ef4444' : '#94a3b8'}">${m.load_imbalance.std_dev_busy_ticks.toFixed(1)}</td>
-          <td style="color: ${isBadImbalance ? '#ef4444' : '#10b981'}; font-weight: 600;">${m.load_imbalance.jains_fairness_index.toFixed(3)}</td>
-          <td>${m.response_time.mean.toFixed(1)}</td>
-          <td>${m.response_time.p95.toFixed(1)}</td>
-          <td>${m.cpu_utilization.average_pct.toFixed(1)}%</td>
-        `;
-        elements.benchmarksTbody.appendChild(tr);
-      });
-    }
+    const s = h.static;
+    const d = h.dynamic;
+    const c = h.comparison;
+
+    const rows = [
+      {
+        metric: "Makespan (Total Execution Ticks)",
+        phase1: `${s.makespan} t`,
+        phase2: `${d.makespan} t`,
+        delta: `-${c.makespan_reduction_pct.toFixed(1)}% reduction`,
+        isPositive: true
+      },
+      {
+        metric: "Speedup (relative to 1-Core baseline)",
+        phase1: `${s.speedup.toFixed(2)}x`,
+        phase2: `${d.speedup.toFixed(2)}x`,
+        delta: `+${c.speedup_gain.toFixed(2)}x speedup gain`,
+        isPositive: true
+      },
+      {
+        metric: "Multi-Core Efficiency (%)",
+        phase1: `${s.efficiency_pct.toFixed(1)}%`,
+        phase2: `${d.efficiency_pct.toFixed(1)}%`,
+        delta: `+${(d.efficiency_pct - s.efficiency_pct).toFixed(1)}% efficiency boost`,
+        isPositive: true
+      },
+      {
+        metric: "Load Imbalance (StdDev of busy cycles)",
+        phase1: `${s.load_imbalance.std_dev_busy_ticks.toFixed(1)} ticks`,
+        phase2: `${d.load_imbalance.std_dev_busy_ticks.toFixed(1)} ticks`,
+        delta: `-${c.imbalance_reduction_pct.toFixed(1)}% imbalance drop`,
+        isPositive: true
+      },
+      {
+        metric: "Jain's Fairness Index (0.0 to 1.0)",
+        phase1: `${s.load_imbalance.jains_fairness_index.toFixed(3)}`,
+        phase2: `${d.load_imbalance.jains_fairness_index.toFixed(3)}`,
+        delta: `+${c.fairness_gain.toFixed(3)} (restored to 1.0)`,
+        isPositive: true
+      },
+      {
+        metric: "P95 Response Latency",
+        phase1: `${s.response_time.p95.toFixed(1)} ticks`,
+        phase2: `${d.response_time.p95.toFixed(1)} ticks`,
+        delta: `-${c.p95_resp_reduction_pct.toFixed(1)}% tail latency drop`,
+        isPositive: true
+      },
+      {
+        metric: "Average CPU Core Utilization",
+        phase1: `${s.cpu_utilization.average_pct.toFixed(1)}%`,
+        phase2: `${d.cpu_utilization.average_pct.toFixed(1)}%`,
+        delta: `+${(d.cpu_utilization.average_pct - s.cpu_utilization.average_pct).toFixed(1)}% utilization`,
+        isPositive: true
+      },
+      {
+        metric: "Dynamic Task Migrations",
+        phase1: "0 (Static)",
+        phase2: `${c.total_migrations} tasks migrated`,
+        delta: `Overhead: ${d.migrations ? d.migrations.total_overhead_ticks : 0}t`,
+        isPositive: true
+      }
+    ];
+
+    rows.forEach(r => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${r.metric}</strong></td>
+        <td style="color: #ef4444; font-weight: 600;">${r.phase1}</td>
+        <td style="color: #10b981; font-weight: 700;">${r.phase2}</td>
+        <td><span class="delta-pill ${r.isPositive ? 'delta-positive' : 'delta-negative'}">${r.delta}</span></td>
+      `;
+      elements.comparisonTbody.appendChild(tr);
+    });
+
   } catch (err) {
-    console.error('Failed to load benchmarks', err);
+    console.error('Failed to load comparison data', err);
   }
 }
 

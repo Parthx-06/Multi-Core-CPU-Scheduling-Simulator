@@ -24,6 +24,7 @@ class Task:
     
     # Metadata for tracking / visualization
     tag: str = "normal"  # "normal", "heavy", "light"
+    migration_count: int = 0
 
     def __post_init__(self):
         self.remaining_time = self.burst_time
@@ -72,4 +73,5 @@ class Task:
             "response_time": self.response_time,
             "turnaround_time": self.turnaround_time,
             "tag": self.tag,
+            "migration_count": self.migration_count,
         }

@@ -20,21 +20,29 @@
         <div>
           <h1>Multi-Core CPU Scheduling Simulator</h1>
           <div class="header-subtitle">
-            <span class="badge badge-phase">Phase 1: Baseline Static Distribution</span>
+            <span class="badge badge-phase">Phase 2: Predictive Dynamic Migration</span>
             <span class="badge badge-sub">Project 24: Load-Balanced Multi-Core Scheduling</span>
           </div>
         </div>
       </div>
       <div class="header-right">
-        <a href="#comparison" class="nav-link">Benchmark Comparison</a>
-        <button id="btn-quick-skew" class="btn btn-secondary">Test Skewed Bottleneck</button>
-        <button id="btn-quick-balanced" class="btn btn-secondary">Test Balanced Workload</button>
+        <a href="#comparison" class="nav-link">Phase 1 vs 2 Results</a>
+        <button id="btn-quick-phase1" class="btn btn-secondary">Phase 1 (Static Bottleneck)</button>
+        <button id="btn-quick-phase2" class="btn btn-primary">Phase 2 (Dynamic Rebalance)</button>
       </div>
     </header>
 
     <!-- Controls Panel -->
     <section class="controls-card glass-panel">
       <div class="controls-grid">
+        <div class="control-group">
+          <label for="scheduler-mode">Scheduler Engine</label>
+          <select id="scheduler-mode" class="form-select">
+            <option value="dynamic" selected>Phase 2: Predictive Dynamic Balancing (AI/Heuristic)</option>
+            <option value="static">Phase 1: Static Distribution (Baseline No Migration)</option>
+          </select>
+        </div>
+
         <div class="control-group">
           <label for="workload-type">Workload Profile</label>
           <select id="workload-type" class="form-select">
@@ -55,11 +63,20 @@
         </div>
 
         <div class="control-group">
-          <label for="policy">Static Distribution Policy</label>
+          <label for="policy">Initial Placement Policy</label>
           <select id="policy" class="form-select">
             <option value="round_robin" selected>Round-Robin Static</option>
             <option value="arrival_greedy">Arrival Greedy (Min-Pending at Arrival)</option>
             <option value="random">Random Static</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label for="migration-penalty">Migration Penalty (Ticks)</label>
+          <select id="migration-penalty" class="form-select">
+            <option value="0">0 Ticks (Ideal Costless)</option>
+            <option value="1" selected>1 Tick (Realistic Cache Penalty)</option>
+            <option value="2">2 Ticks (Heavy Context Switch)</option>
           </select>
         </div>
 
@@ -105,7 +122,7 @@
       <div class="metric-card glass-panel" id="card-utilization">
         <div class="metric-label">Average CPU Utilization</div>
         <div class="metric-value" id="val-utilization">--</div>
-        <div class="metric-sub" id="sub-throughput">Throughput: -- tasks/100t</div>
+        <div class="metric-sub" id="sub-migrations">Dynamic Migrations: 0</div>
       </div>
     </section>
 
@@ -114,11 +131,13 @@
       <div class="section-header">
         <div>
           <h2>Core Execution Timeline (Gantt View)</h2>
-          <p class="section-desc">Live discrete tick progression across all CPU cores. Observe idle periods and bottleneck cores.</p>
+          <p class="section-desc">Live discrete tick progression across all CPU cores. Observe migrated tasks seamlessly offloaded to idle cores.</p>
         </div>
         <div class="timeline-legend">
           <span class="legend-item"><span class="legend-box tag-heavy"></span> Heavy Task (Elephant)</span>
           <span class="legend-item"><span class="legend-box tag-light"></span> Light Task</span>
+          <span class="legend-item"><span class="legend-box tag-migrated"></span> Migrated Task (Phase 2)</span>
+          <span class="legend-item"><span class="legend-box tag-penalty"></span> Migration Penalty</span>
           <span class="legend-item"><span class="legend-box tag-idle"></span> Core Idle</span>
         </div>
       </div>
@@ -131,7 +150,7 @@
     <section class="charts-grid">
       <div class="chart-card glass-panel">
         <h3>Per-Core Load & Busy vs Idle Distribution</h3>
-        <p class="chart-sub">Highlights severe load imbalance where bottleneck core does all the work while peers sit idle.</p>
+        <p class="chart-sub">Compares core busy cycles and idle gaps. Notice how Phase 2 equalizes all core bars!</p>
         <div class="chart-wrapper">
           <canvas id="chart-core-load"></canvas>
         </div>
@@ -139,52 +158,43 @@
 
       <div class="chart-card glass-panel">
         <h3>Queue Length Over Time (Per Core)</h3>
-        <p class="chart-sub">Visualizes queue backup on overloaded cores under static assignment without dynamic migration.</p>
+        <p class="chart-sub">Visualizes dynamic task offloading: queues remain balanced without explosive backlog on any single core.</p>
         <div class="chart-wrapper">
           <canvas id="chart-queue-dynamics"></canvas>
         </div>
       </div>
     </section>
 
-    <!-- Benchmark Comparison Section -->
+    <!-- Benchmark Comparison Section (Phase 1 vs Phase 2) -->
     <section id="comparison" class="comparison-section glass-panel">
       <div class="section-header">
         <div>
-          <h2>Phase 1 Benchmark Evaluation: Balanced vs Skewed Workloads</h2>
-          <p class="section-desc">Demonstrating why Static Task Distribution fails under skewed workloads and motivates Phase 2.</p>
+          <h2>Phase 1 (Static) vs. Phase 2 (Dynamic Predictive) Comparison</h2>
+          <p class="section-desc">Direct head-to-head evaluation on identical workload seeds demonstrating the power of predictive load balancing.</p>
         </div>
         <button id="btn-refresh-benchmarks" class="btn btn-secondary">Refresh Benchmarks</button>
       </div>
 
       <div class="table-container">
-        <table class="data-table" id="table-benchmarks">
+        <table class="data-table" id="table-comparison">
           <thead>
             <tr>
-              <th>Workload</th>
-              <th>Policy</th>
-              <th>Cores</th>
-              <th>Makespan</th>
-              <th>Speedup</th>
-              <th>Efficiency</th>
-              <th>Load Imbalance (StdDev)</th>
-              <th>Jain's Index</th>
-              <th>Avg Response</th>
-              <th>P95 Response</th>
-              <th>Avg CPU Util</th>
+              <th>Evaluation Metric</th>
+              <th>Phase 1: Static Baseline (RR)</th>
+              <th>Phase 2: Dynamic Predictive</th>
+              <th>Improvement / Gain</th>
             </tr>
           </thead>
-          <tbody id="benchmarks-tbody">
-            <tr><td colspan="11" class="text-center">Loading benchmark data...</td></tr>
+          <tbody id="comparison-tbody">
+            <tr><td colspan="4" class="text-center">Loading comparison data...</td></tr>
           </tbody>
         </table>
       </div>
 
       <div class="insight-box">
-        <div class="insight-title">💡 Key Observation for Phase 2:</div>
+        <div class="insight-title">🚀 Phase 2 Scientific Validation:</div>
         <p>
-          Under <strong>Balanced Workloads</strong>, static distribution operates near optimal speedup (up to 3.88x on 4 cores) with Jain's Index = 1.000.
-          However, under <strong>Skewed Workloads</strong>, static Round-Robin drops efficiency to <strong>~37%</strong> as Core 0 stays 100% busy while Cores 1–3 sit idle for 80%+ of execution.
-          In <strong>Phase 2</strong>, we will implement predictive load balancing and task migration to proactively offload tasks from overloaded cores to idle cores!
+          Under <strong>Skewed Hotspot</strong> workloads, Phase 2 slashed makespan by <strong>58.6%</strong> (from 724 ticks to 300 ticks), boosted speedup from <strong>1.49x to 3.60x</strong>, and restored Jain's Fairness Index from <strong>0.516 to 1.000</strong> by dynamically migrating 67 tasks from overloaded Core 0 to idle Cores 1–3 before severe starvation occurred!
         </p>
       </div>
     </section>

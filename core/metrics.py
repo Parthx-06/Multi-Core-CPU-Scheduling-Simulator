@@ -85,6 +85,10 @@ class MetricsEngine:
             speedup = round(single_core_makespan / makespan, 3)
             efficiency = round((speedup / num_cores) * 100.0, 2)
 
+        # 6. Migration Metrics (Phase 2)
+        total_migrations = simulation_result.get("total_migrations", 0)
+        total_overhead_ticks = sum(c.migration_overhead_ticks for c in cores)
+
         return {
             "policy": policy,
             "num_cores": num_cores,
@@ -94,6 +98,12 @@ class MetricsEngine:
             "speedup": speedup,
             "efficiency_pct": efficiency,
             "throughput_per_100_ticks": throughput,
+            "migrations": {
+                "total_count": total_migrations,
+                "total_overhead_ticks": total_overhead_ticks,
+                "migrations_in": [c.migrations_in for c in cores],
+                "migrations_out": [c.migrations_out for c in cores],
+            },
             "load_imbalance": {
                 "std_dev_busy_ticks": round(std_dev, 2),
                 "jains_fairness_index": round(jains_index, 4),
@@ -109,4 +119,36 @@ class MetricsEngine:
             "response_time": response_stats,
             "turnaround_time": turnaround_stats,
             "waiting_time": waiting_stats,
+        }
+
+    @staticmethod
+    def compare_static_vs_dynamic(static_m: Dict[str, Any], dynamic_m: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Calculates direct percentage improvements of Phase 2 Dynamic over Phase 1 Static baseline.
+        """
+        stat_makespan = static_m.get("makespan", 1)
+        dyn_makespan = dynamic_m.get("makespan", 1)
+        makespan_reduction_pct = round(((stat_makespan - dyn_makespan) / stat_makespan) * 100.0, 2)
+
+        stat_std = static_m["load_imbalance"]["std_dev_busy_ticks"]
+        dyn_std = dynamic_m["load_imbalance"]["std_dev_busy_ticks"]
+        imbalance_reduction_pct = round(((stat_std - dyn_std) / stat_std) * 100.0, 2) if stat_std > 0 else 0.0
+
+        stat_jains = static_m["load_imbalance"]["jains_fairness_index"]
+        dyn_jains = dynamic_m["load_imbalance"]["jains_fairness_index"]
+        fairness_gain = round(dyn_jains - stat_jains, 4)
+
+        stat_p95_resp = static_m["response_time"]["p95"]
+        dyn_p95_resp = dynamic_m["response_time"]["p95"]
+        p95_resp_reduction_pct = round(((stat_p95_resp - dyn_p95_resp) / stat_p95_resp) * 100.0, 2) if stat_p95_resp > 0 else 0.0
+
+        speedup_gain = round((dynamic_m.get("speedup", 1.0) or 1.0) - (static_m.get("speedup", 1.0) or 1.0), 3)
+
+        return {
+            "makespan_reduction_pct": makespan_reduction_pct,
+            "imbalance_reduction_pct": imbalance_reduction_pct,
+            "fairness_gain": fairness_gain,
+            "p95_resp_reduction_pct": p95_resp_reduction_pct,
+            "speedup_gain": speedup_gain,
+            "total_migrations": dynamic_m["migrations"]["total_count"],
         }

@@ -1,0 +1,640 @@
+{
+  "skewed_hotspot": {
+    "static": {
+      "policy": "round_robin",
+      "num_cores": 4,
+      "total_tasks": 80,
+      "makespan": 724,
+      "single_core_makespan": 1081,
+      "speedup": 1.493,
+      "efficiency_pct": 37.33,
+      "throughput_per_100_ticks": 11.05,
+      "migrations": {
+        "total_count": 0,
+        "total_overhead_ticks": 0,
+        "migrations_in": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "migrations_out": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "load_imbalance": {
+        "std_dev_busy_ticks": 260.74,
+        "jains_fairness_index": 0.5165,
+        "peak_to_avg_ratio": 2.675,
+        "imbalance_ratio_pct": 84.47,
+        "core_busy_ticks": [
+          721,
+          117,
+          112,
+          128
+        ],
+        "core_idle_ticks": [
+          3,
+          607,
+          612,
+          596
+        ]
+      },
+      "cpu_utilization": {
+        "average_pct": 37.23,
+        "per_core_pct": [
+          99.59,
+          16.16,
+          15.47,
+          17.68
+        ]
+      },
+      "response_time": {
+        "mean": 69.11,
+        "min": 0,
+        "max": 535,
+        "p95": 461.0
+      },
+      "turnaround_time": {
+        "mean": 82.59,
+        "min": 4,
+        "max": 570,
+        "p95": 495.0
+      },
+      "waiting_time": {
+        "mean": 69.11,
+        "min": 0,
+        "max": 535,
+        "p95": 461.0
+      }
+    },
+    "dynamic": {
+      "policy": "dynamic_predictive_round_robin",
+      "num_cores": 4,
+      "total_tasks": 80,
+      "makespan": 300,
+      "single_core_makespan": 1081,
+      "speedup": 3.603,
+      "efficiency_pct": 90.08,
+      "throughput_per_100_ticks": 26.667,
+      "migrations": {
+        "total_count": 67,
+        "total_overhead_ticks": 67,
+        "migrations_in": [
+          35,
+          9,
+          10,
+          13
+        ],
+        "migrations_out": [
+          19,
+          20,
+          16,
+          12
+        ]
+      },
+      "load_imbalance": {
+        "std_dev_busy_ticks": 6.46,
+        "jains_fairness_index": 0.9995,
+        "peak_to_avg_ratio": 1.038,
+        "imbalance_ratio_pct": 5.72,
+        "core_busy_ticks": [
+          283,
+          297,
+          285,
+          280
+        ],
+        "core_idle_ticks": [
+          17,
+          3,
+          15,
+          20
+        ]
+      },
+      "cpu_utilization": {
+        "average_pct": 95.41,
+        "per_core_pct": [
+          94.33,
+          99.0,
+          95.0,
+          93.33
+        ]
+      },
+      "response_time": {
+        "mean": 82.39,
+        "min": 0,
+        "max": 171,
+        "p95": 155.0
+      },
+      "turnaround_time": {
+        "mean": 86.83,
+        "min": 4,
+        "max": 177,
+        "p95": 161.0
+      },
+      "waiting_time": {
+        "mean": 73.35,
+        "min": 0,
+        "max": 171,
+        "p95": 155.0
+      }
+    },
+    "comparison": {
+      "makespan_reduction_pct": 58.56,
+      "imbalance_reduction_pct": 97.52,
+      "fairness_gain": 0.483,
+      "p95_resp_reduction_pct": 66.38,
+      "speedup_gain": 2.11,
+      "total_migrations": 67
+    },
+    "migrations": [
+      {
+        "tick": 3,
+        "task_id": 1,
+        "from_core": 0,
+        "to_core": 1,
+        "burst_time": 34,
+        "predicted_disparity": 44.0,
+        "penalty_ticks": 1
+      },
+      {
+        "tick": 4,
+        "task_id": 2,
+        "from_core": 1,
+        "to_core": 0,
+        "burst_time": 6,
+        "predicted_disparity": 45.9,
+        "penalty_ticks": 1
+      },
+      {
+        "tick": 10,
+        "task_id": 5,
+        "from_core": 0,
+        "to_core": 2,
+        "burst_time": 41,
+        "predicted_disparity": 40.53,
+        "penalty_ticks": 1
+      },
+      {
+        "tick": 11,
+        "task_id": 6,
+        "from_core": 1,
+        "to_core": 0,
+        "burst_time": 8,
+        "predicted_disparity": 31.93,
+        "penalty_ticks": 1
+      },
+      {
+        "tick": 12,
+        "task_id": 7,
+        "from_core": 2,
+        "to_core": 0,
+        "burst_time": 4,
+        "predicted_disparity": 42.53,
+        "penalty_ticks": 1
+      },
+      {
+        "tick": 14,
+        "task_id": 9,
+        "from_core": 0,
+        "to_core": 3,
+        "burst_time": 36,
+        "predicted_disparity": 46.47,
+        "penalty_ticks": 1
+      },
+      {
+        "tick": 18,
+        "task_id": 11,
+        "from_core": 2,
+        "to_core": 0,
+        "burst_time": 8,
+        "predicted_disparity": 38.13,
+        "penalty_ticks": 1
+      },
+      {
+        "tick": 20,
+        "task_id": 12,
+        "from_core": 3,
+        "to_core": 0,
+        "burst_time": 8,
+        "predicted_disparity": 27.07,
+        "penalty_ticks": 1
+      },
+      {
+        "tick": 22,
+        "task_id": 13,
+        "from_core": 0,
+        "to_core": 1,
+        "burst_time": 36,
+        "predicted_disparity": 39.67,
+        "penalty_ticks": 1
+      },
+      {
+        "tick": 24,
+        "task_id": 14,
+        "from_core": 1,
+        "to_core": 0,
+        "burst_time": 8,
+        "predicted_disparity": 53.87,
+        "penalty_ticks": 1
+      },
+      {
+        "tick": 26,
+        "task_id": 10,
+        "from_core": 1,
+        "to_core": 2,
+        "burst_time": 8,
+        "predicted_disparity": 27.0,
+        "penalty_ticks": 1
+      },
+      {
+        "tick": 28,
+        "task_id": 17,
+        "from_core": 0,
+        "to_core": 3,
+        "burst_time": 37,
+        "predicted_disparity": 36.27,
+        "penalty_ticks": 1
+      },
+      {
+        "tick": 30,
+        "task_id": 16,
+        "from_core": 3,
+        "to_core": 0,
+        "burst_time": 7,
+        "predicted_disparity": 58.73,
+        "penalty_ticks": 1
+      },
+      {
+        "tick": 32,
+        "task_id": 20,
+        "from_core": 3,
+        "to_core": 0,
+        "burst_time": 7,
+        "predicted_disparity": 44.07,
+        "penalty_ticks": 1
+      },
+      {
+        "tick": 34,
+        "task_id": 21,
+        "from_core": 0,
+        "to_core": 2,
+        "burst_time": 38,
+        "predicted_disparity": 37.8,
+        "penalty_ticks": 1
+      },
+      {
+        "tick": 36,
+        "task_id": 19,
+        "from_core": 2,
+        "to_core": 0,
+        "burst_time": 4,
+        "predicted_disparity": 42.53,
+        "penalty_ticks": 1
+      },
+      {
+        "tick": 38,
+        "task_id": 23,
+        "from_core": 2,
+        "to_core": 0,
+        "burst_time": 4,
+        "predicted_disparity": 31.67,
+        "penalty_ticks": 1
+      },
+      {
+        "tick": 40,
+        "task_id": 15,
+        "from_core": 2,
+        "to_core": 0,
+        "burst_time": 4,
+        "predicted_disparity": 15.2,
+        "penalty_ticks": 1
+      },
+      {
+        "tick": 42,
+        "task_id": 24,
+        "from_core": 3,
+        "to_core": 0,
+        "burst_time": 7,
+        "predicted_disparity": 15.2,
+        "penalty_ticks": 1
+      },
+      {
+        "tick": 44,
+        "task_id": 25,
+        "from_core": 0,
+        "to_core": 1,
+        "burst_time": 34,
+        "predicted_disparity": 53.67,
+        "penalty_ticks": 1
+      }
+    ]
+  },
+  "skewed_bimodal": {
+    "static": {
+      "policy": "round_robin",
+      "num_cores": 4,
+      "total_tasks": 80,
+      "makespan": 461,
+      "single_core_makespan": 1380,
+      "speedup": 2.993,
+      "efficiency_pct": 74.83,
+      "throughput_per_100_ticks": 17.354,
+      "migrations": {
+        "total_count": 0,
+        "total_overhead_ticks": 0,
+        "migrations_in": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "migrations_out": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "load_imbalance": {
+        "std_dev_busy_ticks": 75.6,
+        "jains_fairness_index": 0.9542,
+        "peak_to_avg_ratio": 1.322,
+        "imbalance_ratio_pct": 42.11,
+        "core_busy_ticks": [
+          288,
+          372,
+          456,
+          264
+        ],
+        "core_idle_ticks": [
+          173,
+          89,
+          5,
+          197
+        ]
+      },
+      "cpu_utilization": {
+        "average_pct": 74.84,
+        "per_core_pct": [
+          62.47,
+          80.69,
+          98.92,
+          57.27
+        ]
+      },
+      "response_time": {
+        "mean": 90.65,
+        "min": 0,
+        "max": 329,
+        "p95": 254.0
+      },
+      "turnaround_time": {
+        "mean": 107.9,
+        "min": 3,
+        "max": 333,
+        "p95": 296.0
+      },
+      "waiting_time": {
+        "mean": 90.65,
+        "min": 0,
+        "max": 329,
+        "p95": 254.0
+      }
+    },
+    "dynamic": {
+      "policy": "dynamic_predictive_round_robin",
+      "num_cores": 4,
+      "total_tasks": 80,
+      "makespan": 366,
+      "single_core_makespan": 1380,
+      "speedup": 3.77,
+      "efficiency_pct": 94.25,
+      "throughput_per_100_ticks": 21.858,
+      "migrations": {
+        "total_count": 53,
+        "total_overhead_ticks": 53,
+        "migrations_in": [
+          17,
+          15,
+          11,
+          10
+        ],
+        "migrations_out": [
+          18,
+          11,
+          16,
+          8
+        ]
+      },
+      "load_imbalance": {
+        "std_dev_busy_ticks": 5.21,
+        "jains_fairness_index": 0.9998,
+        "peak_to_avg_ratio": 1.022,
+        "imbalance_ratio_pct": 3.55,
+        "core_busy_ticks": [
+          360,
+          366,
+          353,
+          354
+        ],
+        "core_idle_ticks": [
+          6,
+          0,
+          13,
+          12
+        ]
+      },
+      "cpu_utilization": {
+        "average_pct": 97.88,
+        "per_core_pct": [
+          98.36,
+          100.0,
+          96.45,
+          96.72
+        ]
+      },
+      "response_time": {
+        "mean": 111.9,
+        "min": 0,
+        "max": 229,
+        "p95": 223.0
+      },
+      "turnaround_time": {
+        "mean": 120.04,
+        "min": 4,
+        "max": 238,
+        "p95": 232.0
+      },
+      "waiting_time": {
+        "mean": 102.79,
+        "min": 1,
+        "max": 229,
+        "p95": 223.0
+      }
+    },
+    "comparison": {
+      "makespan_reduction_pct": 20.61,
+      "imbalance_reduction_pct": 93.11,
+      "fairness_gain": 0.0456,
+      "p95_resp_reduction_pct": 12.2,
+      "speedup_gain": 0.777,
+      "total_migrations": 53
+    }
+  },
+  "balanced": {
+    "static": {
+      "policy": "round_robin",
+      "num_cores": 4,
+      "total_tasks": 80,
+      "makespan": 242,
+      "single_core_makespan": 940,
+      "speedup": 3.884,
+      "efficiency_pct": 97.1,
+      "throughput_per_100_ticks": 33.058,
+      "migrations": {
+        "total_count": 0,
+        "total_overhead_ticks": 0,
+        "migrations_in": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "migrations_out": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "load_imbalance": {
+        "std_dev_busy_ticks": 3.9,
+        "jains_fairness_index": 0.9997,
+        "peak_to_avg_ratio": 1.016,
+        "imbalance_ratio_pct": 4.2,
+        "core_busy_ticks": [
+          238,
+          234,
+          237,
+          228
+        ],
+        "core_idle_ticks": [
+          4,
+          8,
+          5,
+          14
+        ]
+      },
+      "cpu_utilization": {
+        "average_pct": 96.8,
+        "per_core_pct": [
+          98.35,
+          96.69,
+          97.93,
+          94.21
+        ]
+      },
+      "response_time": {
+        "mean": 40.56,
+        "min": 0,
+        "max": 73,
+        "p95": 70.0
+      },
+      "turnaround_time": {
+        "mean": 52.27,
+        "min": 12,
+        "max": 86,
+        "p95": 79.0
+      },
+      "waiting_time": {
+        "mean": 40.56,
+        "min": 0,
+        "max": 73,
+        "p95": 70.0
+      }
+    },
+    "dynamic": {
+      "policy": "dynamic_predictive_round_robin",
+      "num_cores": 4,
+      "total_tasks": 80,
+      "makespan": 255,
+      "single_core_makespan": 940,
+      "speedup": 3.686,
+      "efficiency_pct": 92.15,
+      "throughput_per_100_ticks": 31.373,
+      "migrations": {
+        "total_count": 57,
+        "total_overhead_ticks": 57,
+        "migrations_in": [
+          14,
+          15,
+          14,
+          14
+        ],
+        "migrations_out": [
+          15,
+          15,
+          15,
+          12
+        ]
+      },
+      "load_imbalance": {
+        "std_dev_busy_ticks": 2.6,
+        "jains_fairness_index": 0.9999,
+        "peak_to_avg_ratio": 1.014,
+        "imbalance_ratio_pct": 2.38,
+        "core_busy_ticks": [
+          246,
+          252,
+          246,
+          250
+        ],
+        "core_idle_ticks": [
+          9,
+          3,
+          9,
+          5
+        ]
+      },
+      "cpu_utilization": {
+        "average_pct": 97.45,
+        "per_core_pct": [
+          96.47,
+          98.82,
+          96.47,
+          98.04
+        ]
+      },
+      "response_time": {
+        "mean": 54.57,
+        "min": 6,
+        "max": 113,
+        "p95": 82.0
+      },
+      "turnaround_time": {
+        "mean": 62.96,
+        "min": 14,
+        "max": 122,
+        "p95": 96.0
+      },
+      "waiting_time": {
+        "mean": 51.25,
+        "min": 1,
+        "max": 113,
+        "p95": 82.0
+      }
+    },
+    "comparison": {
+      "makespan_reduction_pct": -5.37,
+      "imbalance_reduction_pct": 33.33,
+      "fairness_gain": 0.0002,
+      "p95_resp_reduction_pct": -17.14,
+      "speedup_gain": -0.198,
+      "total_migrations": 57
+    }
+  }
+}
