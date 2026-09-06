@@ -90,7 +90,8 @@ def display_comparison_table(title: str, static_m: dict, dynamic_m: dict, compar
 def run_phase2_benchmarks():
     print_banner()
 
-    preset_dir = os.path.join("experiments", "presets")
+    repo_dir = os.path.dirname(os.path.abspath(__file__))
+    preset_dir = os.path.join(repo_dir, "experiments", "presets")
     hotspot_path = os.path.join(preset_dir, "skewed_hotspot.json")
     bimodal_path = os.path.join(preset_dir, "skewed_bimodal.json")
     balanced_path = os.path.join(preset_dir, "balanced.json")
@@ -206,7 +207,7 @@ def run_phase2_benchmarks():
         }
     }
 
-    output_file = os.path.join("experiments", "phase2_comparison_results.json")
+    output_file = os.path.join(repo_dir, "experiments", "phase2_comparison_results.json")
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump(all_comparison_results, f, indent=2)
 

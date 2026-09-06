@@ -94,7 +94,8 @@ class BenchmarkRunner:
             )
 
         # Save results to JSON
-        output_file = os.path.join("experiments", "phase1_benchmark_results.json")
+        base_exp_dir = os.path.dirname(os.path.abspath(__file__))
+        output_file = os.path.join(base_exp_dir, "phase1_benchmark_results.json")
         
         # Strip or condense timelines for the compact summary file
         compact_results = {}
