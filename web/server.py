@@ -20,6 +20,21 @@ app = Flask(__name__, static_folder="static")
 CORS(app)
 
 
+@app.route("/healthz")
+@app.route("/api/health")
+def health_check():
+    return jsonify({
+        "status": "healthy",
+        "service": "multi-core-cpu-scheduling-simulator",
+        "version": "1.0.0"
+    }), 200
+
+
+@app.route("/favicon.ico")
+def favicon():
+    return "", 204
+
+
 @app.route("/")
 def index():
     return send_from_directory(BASE_DIR, "index.html")
@@ -102,4 +117,5 @@ def run_simulation():
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000, debug=False)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)

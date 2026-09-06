@@ -6,4 +6,7 @@ __pycache__/
 htmlcov/
 *.log
 .env
+.venv/
+venv/
+env/
 .DS_Store
